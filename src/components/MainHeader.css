@@ -1,0 +1,56 @@
+.main-navbar {
+  width: 100%;
+  height: 450px;
+  background-image: linear-gradient(to top, #00fb81, rgba(12, 124, 6, 0.371));
+}
+
+.texts-holder {
+  padding-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.welcome-text {
+  font-size: 40px;
+}
+
+.paragraphs {
+  font-size: 26px;
+}
+
+.form-send-link {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-style {
+  border: none;
+  border-bottom: 1px solid black;
+  background-color: transparent;
+  width: 260px;
+  height: 35px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.input-style:focus {
+  outline: none;
+}
+
+button {
+  width: 130px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid black;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
