@@ -23,7 +23,7 @@ const Table = () => {
     },
     headCells: {
       style: {
-        backgroundColor: "#00fb82",
+        backgroundColor: "#69d785",
         color: "#333333",
         fontWeight: "bold",
         fontSize: "28px",

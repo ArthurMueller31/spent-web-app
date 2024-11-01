@@ -4,33 +4,33 @@ import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
 
 const MainHeader = () => {
-  const [inputValue, setInputValue] = useState("");
+  const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
   //  const [submittedValue, setSubmittedValue] = useState("")
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+    setUrl(e.target.value);
     setIsError(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const inputIncludesRightLink = inputValue.includes(
-      "https://sat.sef.sc.gov.br/"
-      
-    );
+
+    const inputIncludesRightLink = url.includes("https://sat.sef.sc.gov.br/");
+
     if (inputIncludesRightLink) {
       setIsError(false);
       try {
-        const response = await axios.post("http:192.168.2.9:3000/scrape", {
-          valor: inputValue
+        const response = await axios.post("http://192.168.2.9:3000/scrape", {
+          url: url
         });
-        console.log(response.data.message);
+        console.log(response.data);
       } catch (error) {
         console.error("Erro ao enviar valor para o backend", error);
+        console.log(url);
       }
     } else {
-      setIsError(true)
+      setIsError(true);
     }
   };
 
@@ -48,7 +48,7 @@ const MainHeader = () => {
           type="text"
           placeholder="https://sat.sef.sc.gov.br/SeuLinkAqui"
           className="input-style"
-          value={inputValue}
+          value={url}
           onChange={handleInputChange}
         />
         <button type="submit" className="button-style" onClick={handleSubmit}>
