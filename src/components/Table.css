@@ -1,0 +1,14 @@
+.table-class {
+  width: 100%;
+  border-collapse: collapse;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* Seleciona o ícone de ordenação e o mantém visível */
+.rdt_TableHead .rdt_TableCol span {
+  opacity: 0; /* força a visibilidade */
+
+}
