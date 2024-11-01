@@ -5,7 +5,7 @@ const Navbar = () => {
   return (
     <nav className="main-navbar">
       <img className="spent-logo" src='../spent-logo-text-right.png' alt='app-logo' />
-      <a href='about'>Sobre</a>
+      {/* Aqui vai o sobre */}
     </nav>
   )
 }

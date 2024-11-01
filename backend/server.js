@@ -1,21 +1,77 @@
-// server.js
 const express = require('express');
-const cors = require('cors'); // Usado para permitir requisições do frontend
+const puppeteer = require('puppeteer');
 
 const app = express();
-const PORT = 5000;
+app.use(express.json()); // Para processar JSON nas requisições
 
-app.use(cors());
-app.use(express.json()); // Permite que o servidor leia JSON no corpo da requisição
-
-app.post('/api/enviar-valor', (req, res) => {
-  const { valor } = req.body;
-  console.log('Valor recebido no backend:', valor);
+// Rota para realizar scraping de uma nota fiscal com base no QR code
+app.post('/scrape', async (req, res) => {
+  const { url } = req.body;
   
-  // Aqui você pode salvar o valor no banco de dados ou processá-lo de alguma forma
-  res.status(200).send({ message: 'Valor recebido com sucesso' });
+  // Verifica se a URL é do domínio correto
+  if (!url.includes("https://sat.sef.sc.gov.br/")) {
+    return res.status(400).json({ success: false, message: 'URL inválida para notas fiscais' });
+  }
+
+  try {
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    console.log("Iniciando scraping...");
+
+    await page.goto(url);
+    console.log("Navegando para a URL...");
+
+    // Coleta todos os elementos com a classe .txtTit
+    const itemDescriptions = await page.$$eval(".txtTit", (el) =>
+      el
+        .filter((item) => !item.classList.contains('noWrap')) // Filtra elementos com a classe .noWrap
+        .map((text) => text.textContent.trim()) // Coleta apenas o texto dos elementos desejados
+    );
+
+    console.log("Itens:", itemDescriptions); // Mostra os itens coletados
+
+    // Coleta os preços dos itens
+    const prices = await page.$$eval(".valor", (el) =>
+      el.map((price) => price.textContent.trim()) // Remove espaços em branco
+    );
+    console.log("Preços:", prices);
+
+    // Coleta a data de emissão
+    const date = await page.$$eval(".ui-li-static", (el) =>
+      el.map((text) => text.textContent)
+    );
+
+    // Encontra a posição de "Emissão" e coleta a data
+    const newDateIndex = date[0].indexOf("Emissão:");
+    function checkEmission(newDateIndex) {
+      if (newDateIndex !== -1) {
+        return date[0].slice(newDateIndex, newDateIndex + 19);
+      } else {
+        return "Data de emissão não encontrada";
+      }
+    }
+    const finalEmissionDate = checkEmission(newDateIndex);
+    console.log("Data de emissão:", finalEmissionDate);
+
+    await browser.close(); // Fecha o browser
+
+    // Retorna os dados para o frontend (React Native)
+    res.json({
+      success: true,
+      data: {
+        items: itemDescriptions,
+        prices: prices,
+        emissionDate: finalEmissionDate,
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao fazer scraping:", error);
+    res.status(500).json({ success: false, message: 'Erro ao fazer scraping' });
+  }
 });
 
+// Inicializa o servidor
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
