@@ -1,17 +1,16 @@
 import "./App.css";
-import MainHeader from "./components/MainHeader";
-import Navbar from "./components/Navbar";
-import Table from "./components/Table";
-import Test from "./components/Test";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import MainScreen from "./components/MainScreen";
+import About from "./components/About";
 
 function App() {
   return (
-    <>
-      <Navbar />
-      <MainHeader />
-      <Table />
-      <Test />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainScreen />} />
+        <Route path="/sobre" element={<About />} />
+      </Routes>
+    </Router>
   );
 }
 
