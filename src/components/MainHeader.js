@@ -55,10 +55,9 @@ const MainHeader = () => {
       getElement.appendChild(tr);
     });
   };
-  // createTableData(whereWasPurchased, "table-row-local");
-  // createTableData(productList, "table-row-products");
-  // createTableData(prices, "table-row-prices");
-
+  createTableData(whereWasPurchased, "where-was-bought")
+  createTableData(productList, "product")
+  createTableData(prices, "spent")
   return (
     <>
       <div className="texts-holder">
@@ -89,25 +88,26 @@ const MainHeader = () => {
       </div>
 
       <div className="table-holder">
-        <table className="table-style">
-          <th>Local</th>
-          <th>Produto</th>
-          <th>Gasto</th>
-          <th>Data</th>
-          <tbody>
-            <tr id="table-row-local">
-              <td>Oi</td>
-            </tr>
-            <tr id="table-row-products">
-              <td>Oi2</td>
-            </tr>
-            <tr id="table-row-prices">
-              <td>oi3</td>
-            </tr>
-            <tr id="table-row-date">
-              <td>Oi4</td>
-            </tr>
-          </tbody>
+        <table id="where-was-bought" className="table-style">
+          <tr>
+            <th>Local</th>
+          </tr>
+        </table>
+        <table id="product">
+          <tr className="tr-styles">
+            <th>Produto</th>
+          </tr>
+        </table>
+        <table id="spent">
+          <tr className="tr-styles">
+            <th>Gasto</th>
+          </tr>
+        </table>
+        <table id="date">
+          <tr className="tr-styles">
+            <th>Data</th>
+          </tr>
+          <tr className="date-style">{emissionDate}</tr>
         </table>
       </div>
     </>
