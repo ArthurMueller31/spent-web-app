@@ -3,3 +3,8 @@
   color: red;
   position: fixed;
 }
+
+.error-div {
+  display: flex;
+  justify-content: center;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./MainHeader.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
@@ -44,20 +44,27 @@ const MainHeader = () => {
     }
   };
 
-  const createTableData = (items, id) => {
-    const getElement = document.getElementById(id);
-    items.forEach((item) => {
-      const tr = document.createElement("tr");
-      const td = document.createElement("td");
-      const name = document.createTextNode(item);
-      td.appendChild(name);
-      tr.appendChild(td);
-      getElement.appendChild(tr);
-    });
-  };
-  createTableData(whereWasPurchased, "where-was-bought")
-  createTableData(productList, "product")
-  createTableData(prices, "spent")
+  useEffect(() => {
+    const createTableData = (items, id) => {
+      const table = document.getElementById(id);
+
+      const rows = table.querySelectorAll("tr:not(:first-child)");
+      rows.forEach((row) => row.remove());
+
+      items.forEach((item) => {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.textContent = item;
+        tr.appendChild(td);
+        table.appendChild(tr);
+      });
+    };
+
+    createTableData(whereWasPurchased, "where-was-bought");
+    createTableData(productList, "product");
+    createTableData(prices, "spent");
+  }, [whereWasPurchased, productList, prices]);
+
   return (
     <>
       <div className="texts-holder">
@@ -83,8 +90,8 @@ const MainHeader = () => {
           <button type="submit" className="button-style" onClick={handleSubmit}>
             Salvar gastos
           </button>
-          {isError && <ErrorMessage />}
         </form>
+        <div>{isError && <ErrorMessage />}</div>
       </div>
 
       <div className="table-holder">
@@ -107,7 +114,9 @@ const MainHeader = () => {
           <tr className="tr-styles">
             <th>Data</th>
           </tr>
-          <tr className="date-style">{emissionDate}</tr>
+          <tr className="date-style">
+            {emissionDate !== "" && <td>{emissionDate}</td>}
+          </tr>
         </table>
       </div>
     </>
