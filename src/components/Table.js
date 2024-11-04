@@ -44,9 +44,8 @@ const Table = () => {
 
   const columns = [
     {
-      name: "Mercado",
-      selector: (row) => row.mercado,
-   
+      name: "Estabelecimento",
+      selector: (row) => row.estabelecimento,
     },
     {
       name: "Produto",
@@ -68,21 +67,21 @@ const Table = () => {
   const data = [
     {
       id: 1,
-      mercado: "Mavili",
+      estabelecimento: "Mavili",
       produto: "carne",
       gasto: 50,
       data: "25/10/2024"
     },
     {
       id: 2,
-      mercado: "Top",
+      estabelecimento: "Top",
       produto: "frango",
       gasto: 30,
       data: "22/10/2024"
     },
     {
       id: 3,
-      mercado: "Big",
+      estabelecimento: "Big",
       produto: "frutas",
       gasto: 40,
       data: "15/09/2024"

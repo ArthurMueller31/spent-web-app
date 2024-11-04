@@ -1,12 +1,10 @@
-
-
 .texts-holder {
   padding-top: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 24px;
+  gap: 15px;
   padding-bottom: 60px;
 }
 
@@ -34,6 +32,7 @@
   border-bottom: 1px solid black;
   width: 260px;
   height: 35px;
+  margin-top: -15px;
   margin-bottom: 30px;
   font-size: 16px;
 }
@@ -56,4 +55,58 @@ button:hover {
   color: #00fb82cd;
 }
 
+.table-holder {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
 
+.table-style {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  border: none;
+  text-align: center;
+  padding: 8px;
+  background-color: #17f382;
+  font-size: 24px;
+}
+
+td {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  text-align: center;
+  font-size: 22px;
+  margin: 10px
+  ;
+  
+}
+
+tr {
+  background-color: lightgrey;
+}
+
+#table-row-products, #table-row-prices, #table-row-local{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.table-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.tr-holder {
+  display: flex;
+  
+}
+
+tbody {
+  display: flex;
+  width: 100%;
+  background-color: lightblue;
+}
