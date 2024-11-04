@@ -44,15 +44,18 @@ app.post("/scrape", async (req, res) => {
 
     // Encontra a posição de "Emissão" e coleta a data
     const newDateIndex = date[0].indexOf("Emissão:");
+    console.log(newDateIndex);
+    const finalEmissionDate = checkEmission(newDateIndex);
+    
     function checkEmission(newDateIndex) {
       if (newDateIndex !== -1) {
-        return date[0].slice(newDateIndex, newDateIndex + 19);
+        const slicedDate = date[0].slice(newDateIndex + 9, newDateIndex + 19).trim();
+        return slicedDate
       } else {
         return "Data de emissão não encontrada";
       }
     }
-    const finalEmissionDate = checkEmission(newDateIndex);
-    console.log("Data de emissão:", finalEmissionDate);
+    
 
     await browser.close(); // Fecha o browser
 
