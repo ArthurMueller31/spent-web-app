@@ -1,0 +1,30 @@
+.main-navbar {
+  width: 100%;
+  height: 80px;
+  background-image: linear-gradient(to top, #00fb82, rgba(24, 157, 17, 0.508));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main-navbar a {
+  display: block;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 0 40px 0 0 
+}
+
+.main-navbar a:hover {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.spent-logo {
+  width: 140px;
+  height: 140px;
+  padding-left: 20px;
+}
