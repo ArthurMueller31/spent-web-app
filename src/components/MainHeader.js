@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./MainHeader.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
@@ -6,64 +6,53 @@ import ErrorMessage from "./ErrorMessage";
 const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
-  const [whereWasPurchased, setWhereWasPurchased] = useState([]);
-  const [productList, setProductList] = useState([]);
-  const [prices, setPrices] = useState([]);
+  const [whereWasPurchased, setWhereWasPurchased] = useState("");
+  // const [productList, setProductList] = useState([]);
+  // const [prices, setPrices] = useState([]);
+  // vou usar depois com a nova pag de info das compras
   const [emissionDate, setEmissionDate] = useState("");
+  const [totalSpent, setTotalSpent] = useState("");
+  const [totalItems, setTotalItems] = useState("");
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
     setIsError(false);
   };
 
-  // previne que o form seja enviado e carregue nova pag, e vê se o link está certo
+  // previne que o form seja enviado e carregue nova pag, e vê se o link está certo (validando no front pra nem chegar a usar o scraping se estiver errado)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const inputIncludesRightLink = url.includes("https://sat.sef.sc.gov.br/");
     if (inputIncludesRightLink) {
       setIsError(false);
-      returnData();
+      returnData(); // chama a func que faz o scraping
     } else {
       setIsError(true);
     }
   };
 
+  // pega a resposta do scraping com a url dada pelo user
   const returnData = async () => {
     try {
       const response = await axios.post("http://192.168.2.9:3000/scrape", {
         url: url
       });
 
+      // dados retornados armazenados nos sets do useState
+      // não precisa mostrar quais os itens por enquanto, será mostrado na pag de info
       setWhereWasPurchased(response.data.data.local);
-      setProductList(response.data.data.items);
-      setPrices(response.data.data.prices);
+      // setProductList(response.data.data.items.length);
+      // setPrices(response.data.data.prices.length);
       setEmissionDate(response.data.data.emissionDate);
+      setTotalSpent(response.data.data.totalSpent);
+      setTotalItems(response.data.data.totalItems);
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    const createTableData = (items, id) => {
-      const table = document.getElementById(id);
-
-      const rows = table.querySelectorAll("tr:not(:first-child)");
-      rows.forEach((row) => row.remove());
-
-      items.forEach((item) => {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.textContent = item;
-        tr.appendChild(td);
-        table.appendChild(tr);
-      });
-    };
-
-    createTableData(whereWasPurchased, "where-was-bought");
-    createTableData(productList, "product");
-    createTableData(prices, "spent");
-  }, [whereWasPurchased, productList, prices]);
+ // aqui estava o código do useEffect
 
   return (
     <>
@@ -97,24 +86,27 @@ const MainHeader = () => {
       <div className="table-holder">
         <table id="where-was-bought" className="table-style">
           <tr>
-            <th>Local</th>
+            <th>Local da Compra</th>
           </tr>
+          <tr className="td-">{whereWasPurchased !== "" && <td>{whereWasPurchased}</td>}</tr>
         </table>
         <table id="product">
           <tr className="tr-styles">
-            <th>Produto</th>
+            <th>Qtd. de Produtos</th>
           </tr>
+          <tr>{totalItems !== "" && <td>{totalItems}</td>}</tr>
         </table>
         <table id="spent">
           <tr className="tr-styles">
-            <th>Gasto</th>
+            <th>Gasto Total</th>
           </tr>
+          <tr>{totalSpent !== "" && <td>{totalSpent}</td>}</tr>
         </table>
         <table id="date">
           <tr className="tr-styles">
-            <th>Data</th>
+            <th>Data da Compra</th>
           </tr>
-          <tr className="date-style">
+          <tr>
             {emissionDate !== "" && <td>{emissionDate}</td>}
           </tr>
         </table>
