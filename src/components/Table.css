@@ -10,5 +10,4 @@
 /* Seleciona o ícone de ordenação e o mantém visível */
 .rdt_TableHead .rdt_TableCol span {
   opacity: 0; /* força a visibilidade */
-
 }
