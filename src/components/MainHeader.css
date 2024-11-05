@@ -52,28 +52,49 @@ button {
 button:hover {
   transition: ease-in-out;
   transition-duration: 200ms;
-  color: #00fb82cd;
-}
-
-.table-holder {
-  display: flex;
-  align-items: start;
-  justify-content: space-around;
-}
-
-th {
-  font-size: 30px;
-  border-bottom: 1px solid black;
+  color: #21ef83;
 }
 
 td {
   padding: 10px;
   border-bottom: 1px solid black;
   font-size: 20px;
-
 }
 
-tr {
+.table-holder {
+  display: flex;
+  justify-content: center; /* Centralizar a tabela */
+  margin-top: 20px;
+}
+
+.table-style {
+  width: 80%; /* Ajusta a largura da tabela */
+  border-collapse: collapse; /* Remove espaços entre as bordas das células */
+  margin: 0 auto; /* Centralizar a tabela */
+}
+
+.table-style th,
+.table-style td {
+  padding: 15px 20px; /* Espaçamento interno nas tds */
   text-align: center;
+  border: 1px solid #898989; /* Borda fina entre as tds */
 }
 
+th {
+  font-size: 30px;
+}
+
+td {
+  font-size: 26px;
+  cursor: pointer
+}
+
+
+.table-style th {
+  background-color: #66d985; /* Cor de fundo para o cabeçalho */
+  font-weight: bold;
+}
+
+.table-style tr:hover {
+  background-color: #eeeeee91; /* Efeito de hover para as linhas */
+}

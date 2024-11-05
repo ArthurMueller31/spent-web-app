@@ -6,13 +6,7 @@ import ErrorMessage from "./ErrorMessage";
 const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
-  const [whereWasPurchased, setWhereWasPurchased] = useState("");
-  // const [productList, setProductList] = useState([]);
-  // const [prices, setPrices] = useState([]);
-  // vou usar depois com a nova pag de info das compras
-  const [emissionDate, setEmissionDate] = useState("");
-  const [totalSpent, setTotalSpent] = useState("");
-  const [totalItems, setTotalItems] = useState("");
+  const [invoices, setInvoices] = useState([]);
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
@@ -20,7 +14,7 @@ const MainHeader = () => {
   };
 
   // previne que o form seja enviado e carregue nova pag, e vê se o link está certo (validando no front pra nem chegar a usar o scraping se estiver errado)
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const inputIncludesRightLink = url.includes("https://sat.sef.sc.gov.br/");
@@ -41,18 +35,31 @@ const MainHeader = () => {
 
       // dados retornados armazenados nos sets do useState
       // não precisa mostrar quais os itens por enquanto, será mostrado na pag de info
-      setWhereWasPurchased(response.data.data.local);
-      // setProductList(response.data.data.items.length);
-      // setPrices(response.data.data.prices.length);
-      setEmissionDate(response.data.data.emissionDate);
-      setTotalSpent(response.data.data.totalSpent);
-      setTotalItems(response.data.data.totalItems);
+      const newInvoice = {
+        url,
+        whereWasPurchased: response.data.data.local,
+        emissionDate: response.data.data.emissionDate,
+        totalSpent: response.data.data.totalSpent,
+        totalItems: response.data.data.totalItems
+      };
+
+      setInvoices((prevInvoices) => {
+        const isDuplicate = prevInvoices.some(
+          (invoice) => invoice.url === newInvoice.url
+        );
+        if (!isDuplicate) {
+          return [...prevInvoices, newInvoice]; // Adiciona nova nota se não for duplicada
+        } else {
+          alert("Você já inseriu esse link anteriormente.")
+          return prevInvoices; // Retorna o array sem mudanças se for duplicada
+        }
+      });
     } catch (error) {
-      console.log(error);
+      alert("Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte.")
     }
   };
 
- // aqui estava o código do useEffect
+  // aqui estava o código do useEffect
 
   return (
     <>
@@ -63,8 +70,7 @@ const MainHeader = () => {
           fiscal no campo abaixo.
         </p>
         <p className="paragraphs">
-          Em caso de dúvidas, dê uma olhada na página Sobre; e se a dúvida
-          persistir, sinta-se à vontade para me mandar um e-mail.
+          Em caso de dúvidas, dê uma olhada na página Sobre.
         </p>
 
         <p className="paragraphs">Insira o link aqui</p>
@@ -84,31 +90,25 @@ const MainHeader = () => {
       </div>
 
       <div className="table-holder">
-        <table id="where-was-bought" className="table-style">
-          <tr>
-            <th>Local da Compra</th>
-          </tr>
-          <tr className="td-">{whereWasPurchased !== "" && <td>{whereWasPurchased}</td>}</tr>
-        </table>
-        <table id="product">
-          <tr className="tr-styles">
-            <th>Qtd. de Produtos</th>
-          </tr>
-          <tr>{totalItems !== "" && <td>{totalItems}</td>}</tr>
-        </table>
-        <table id="spent">
-          <tr className="tr-styles">
-            <th>Gasto Total</th>
-          </tr>
-          <tr>{totalSpent !== "" && <td>{totalSpent}</td>}</tr>
-        </table>
-        <table id="date">
-          <tr className="tr-styles">
-            <th>Data da Compra</th>
-          </tr>
-          <tr>
-            {emissionDate !== "" && <td>{emissionDate}</td>}
-          </tr>
+        <table className="table-style">
+          <thead>
+            <tr>
+              <th>Local da Compra</th>
+              <th>Qtd. de Produtos</th>
+              <th>Gasto Total</th>
+              <th>Data da Compra</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((invoice, index) => (
+              <tr key={index}>
+                <td>{invoice.whereWasPurchased}</td>
+                <td>{invoice.totalItems}</td>
+                <td>{invoice.totalSpent}</td>
+                <td>{invoice.emissionDate}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </>
