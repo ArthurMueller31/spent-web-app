@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./MainHeader.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
@@ -6,64 +6,60 @@ import ErrorMessage from "./ErrorMessage";
 const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
-  const [whereWasPurchased, setWhereWasPurchased] = useState([]);
-  const [productList, setProductList] = useState([]);
-  const [prices, setPrices] = useState([]);
-  const [emissionDate, setEmissionDate] = useState("");
+  const [invoices, setInvoices] = useState([]);
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
     setIsError(false);
   };
 
-  // previne que o form seja enviado e carregue nova pag, e vê se o link está certo
-  const handleSubmit = async (e) => {
+  // previne que o form seja enviado e carregue nova pag, e vê se o link está certo (validando no front pra nem chegar a usar o scraping se estiver errado)
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const inputIncludesRightLink = url.includes("https://sat.sef.sc.gov.br/");
     if (inputIncludesRightLink) {
       setIsError(false);
-      returnData();
+      returnData(); // chama a func que faz o scraping
     } else {
       setIsError(true);
     }
   };
 
+  // pega a resposta do scraping com a url dada pelo user
   const returnData = async () => {
     try {
       const response = await axios.post("http://192.168.2.9:3000/scrape", {
         url: url
       });
 
-      setWhereWasPurchased(response.data.data.local);
-      setProductList(response.data.data.items);
-      setPrices(response.data.data.prices);
-      setEmissionDate(response.data.data.emissionDate);
+      // dados retornados armazenados nos sets do useState
+      // não precisa mostrar quais os itens por enquanto, será mostrado na pag de info
+      const newInvoice = {
+        url,
+        whereWasPurchased: response.data.data.local,
+        emissionDate: response.data.data.emissionDate,
+        totalSpent: response.data.data.totalSpent,
+        totalItems: response.data.data.totalItems
+      };
+
+      setInvoices((prevInvoices) => {
+        const isDuplicate = prevInvoices.some(
+          (invoice) => invoice.url === newInvoice.url
+        );
+        if (!isDuplicate) {
+          return [...prevInvoices, newInvoice]; // Adiciona nova nota se não for duplicada
+        } else {
+          alert("Você já inseriu esse link anteriormente.")
+          return prevInvoices; // Retorna o array sem mudanças se for duplicada
+        }
+      });
     } catch (error) {
-      console.log(error);
+      alert("Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte.")
     }
   };
 
-  useEffect(() => {
-    const createTableData = (items, id) => {
-      const table = document.getElementById(id);
-
-      const rows = table.querySelectorAll("tr:not(:first-child)");
-      rows.forEach((row) => row.remove());
-
-      items.forEach((item) => {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.textContent = item;
-        tr.appendChild(td);
-        table.appendChild(tr);
-      });
-    };
-
-    createTableData(whereWasPurchased, "where-was-bought");
-    createTableData(productList, "product");
-    createTableData(prices, "spent");
-  }, [whereWasPurchased, productList, prices]);
+  // aqui estava o código do useEffect
 
   return (
     <>
@@ -74,8 +70,7 @@ const MainHeader = () => {
           fiscal no campo abaixo.
         </p>
         <p className="paragraphs">
-          Em caso de dúvidas, dê uma olhada na página Sobre; e se a dúvida
-          persistir, sinta-se à vontade para me mandar um e-mail.
+          Em caso de dúvidas, dê uma olhada na página Sobre.
         </p>
 
         <p className="paragraphs">Insira o link aqui</p>
@@ -95,28 +90,25 @@ const MainHeader = () => {
       </div>
 
       <div className="table-holder">
-        <table id="where-was-bought" className="table-style">
-          <tr>
-            <th>Local</th>
-          </tr>
-        </table>
-        <table id="product">
-          <tr className="tr-styles">
-            <th>Produto</th>
-          </tr>
-        </table>
-        <table id="spent">
-          <tr className="tr-styles">
-            <th>Gasto</th>
-          </tr>
-        </table>
-        <table id="date">
-          <tr className="tr-styles">
-            <th>Data</th>
-          </tr>
-          <tr className="date-style">
-            {emissionDate !== "" && <td>{emissionDate}</td>}
-          </tr>
+        <table className="table-style">
+          <thead>
+            <tr>
+              <th>Local da Compra</th>
+              <th>Qtd. de Produtos</th>
+              <th>Gasto Total</th>
+              <th>Data da Compra</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices.map((invoice, index) => (
+              <tr key={index}>
+                <td>{invoice.whereWasPurchased}</td>
+                <td>{invoice.totalItems}</td>
+                <td>{invoice.totalSpent}</td>
+                <td>{invoice.emissionDate}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </>

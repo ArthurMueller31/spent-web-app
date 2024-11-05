@@ -17,9 +17,11 @@ app.post("/scrape", async (req, res) => {
 
     await page.goto(url);
     console.log("Navegando para a URL...");
-    console.log("Olhe o console do navegador")
-  
-    const whereWasBought = await page.$$eval(".txtTopo", (el) => el.map((text) => text.textContent))
+    console.log("Olhe o console do navegador");
+
+    const whereWasBought = await page.$$eval(".txtTopo", (el) =>
+      el.map((text) => text.textContent)
+    );
 
     // Coleta todos os elementos com a classe .txtTit
     const itemDescriptions = await page.$$eval(
@@ -36,16 +38,21 @@ app.post("/scrape", async (req, res) => {
       (el) => el.map((price) => price.textContent.trim()) // Remove espaços em branco
     );
 
+    // Coleta o gasto total da compra
+    const totalSpent = await page.$$eval(".txtMax", (el) =>
+      el.map((spent) => spent.textContent)
+    );
+
+    const totalItems = await page.$eval(".totalNumb", (el) => el.textContent);
+
     // Coleta a data de emissão
     const date = await page.$$eval(".ui-li-static", (el) =>
       el.map((text) => text.textContent)
     );
 
-  
     // Encontra a posição de "Emissão" e coleta a data
     const newDateIndex = date[0].indexOf("Emissão:");
-    const finalEmissionDate = checkEmission(newDateIndex)
-    
+    const finalEmissionDate = checkEmission(newDateIndex);
 
     function checkEmission(newDateIndex) {
       if (newDateIndex !== -1) {
@@ -66,8 +73,10 @@ app.post("/scrape", async (req, res) => {
       data: {
         local: whereWasBought,
         items: itemDescriptions,
-        prices: prices,
-        emissionDate: finalEmissionDate
+        prices,
+        emissionDate: finalEmissionDate,
+        totalSpent,
+        totalItems
       }
     });
   } catch (error) {
