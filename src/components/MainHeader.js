@@ -26,6 +26,12 @@ const MainHeader = () => {
     }
   };
 
+  // formata a data pra ficar em ordem, pois o new Date entende apenas data ano/mês/dia
+  const formatDateForSorting = (dateString) => {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`;
+  };
+
   // pega a resposta do scraping com a url dada pelo user
   const returnData = async () => {
     try {
@@ -48,14 +54,22 @@ const MainHeader = () => {
           (invoice) => invoice.url === newInvoice.url
         );
         if (!isDuplicate) {
-          return [...prevInvoices, newInvoice]; // Adiciona nova nota se não for duplicada
+          const sortedInvoices = [...prevInvoices, newInvoice].sort(
+            (a, b) =>
+              new Date(formatDateForSorting(b.emissionDate)) -
+              new Date(formatDateForSorting(a.emissionDate))
+          );
+
+          return sortedInvoices;
         } else {
-          alert("Você já inseriu esse link anteriormente.")
+          alert("Você já inseriu esse link anteriormente.");
           return prevInvoices; // Retorna o array sem mudanças se for duplicada
         }
       });
     } catch (error) {
-      alert("Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte.")
+      alert(
+        "Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte."
+      );
     }
   };
 
