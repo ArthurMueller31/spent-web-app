@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./MainHeader.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
@@ -7,6 +7,7 @@ const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
   const [invoices, setInvoices] = useState([]);
+  const detailsRefs = useRef([]);
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
@@ -86,7 +87,17 @@ const MainHeader = () => {
     );
   };
 
-  // aqui estava o código do useEffect
+  // smooth scrolling
+  useEffect(() => {
+    const openedIndex = invoices.findIndex((invoice) => invoice.showDetails);
+    if (openedIndex !== -1 && detailsRefs.current[openedIndex]) {
+      detailsRefs.current[openedIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        
+      });
+    }
+  }, [invoices]);
 
   return (
     <>
@@ -132,6 +143,7 @@ const MainHeader = () => {
                 <tr
                   onClick={() => toggleDetails(index)}
                   className={invoice.showDetails ? "open" : ""}
+                  ref={(el) => (detailsRefs.current[index] = el)} // definindo referência
                 >
                   <td>{invoice.whereWasPurchased}</td>
                   <td>{invoice.totalItems}</td>
