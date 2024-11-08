@@ -49,7 +49,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.button-style:hover {
   transition: ease-in-out;
   transition-duration: 200ms;
   color: #21ef83;
@@ -119,4 +119,23 @@ td {
   background-color: #f0f0f0;
 }
 
+.delete-button-holder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
 
+.delete-button {
+  color: red; /* Deixa o texto do botão vermelho */
+  text-align: center; /* Centraliza o texto dentro do botão */
+  background-color: white; /* Tornar o fundo do botão transparente */
+  cursor: pointer; /* Mostra o cursor de clique ao passar sobre o botão */
+  border: 1px solid red;
+  padding: 5px;
+  border-radius: 5%;
+}
+
+.delete-button:hover {
+  color: rgba(255, 0, 0, 0.712)
+}
