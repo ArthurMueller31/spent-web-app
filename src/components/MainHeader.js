@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./MainHeader.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
@@ -7,6 +7,7 @@ const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
   const [invoices, setInvoices] = useState([]);
+  const detailsRefs = useRef([]);
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
@@ -46,7 +47,10 @@ const MainHeader = () => {
         whereWasPurchased: response.data.data.local,
         emissionDate: response.data.data.emissionDate,
         totalSpent: response.data.data.totalSpent,
-        totalItems: response.data.data.totalItems
+        totalItems: response.data.data.totalItems,
+        productList: response.data.data.items,
+        prices: response.data.data.prices,
+        showDetails: false
       };
 
       setInvoices((prevInvoices) => {
@@ -73,7 +77,27 @@ const MainHeader = () => {
     }
   };
 
-  // aqui estava o código do useEffect
+  const toggleDetails = (index) => {
+    setInvoices((prevInvoices) =>
+      prevInvoices.map((invoice, i) =>
+        i === index
+          ? { ...invoice, showDetails: !invoice.showDetails }
+          : invoice
+      )
+    );
+  };
+
+  // smooth scrolling
+  useEffect(() => {
+    const openedIndex = invoices.findIndex((invoice) => invoice.showDetails);
+    if (openedIndex !== -1 && detailsRefs.current[openedIndex]) {
+      detailsRefs.current[openedIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        
+      });
+    }
+  }, [invoices]);
 
   return (
     <>
@@ -115,12 +139,47 @@ const MainHeader = () => {
           </thead>
           <tbody>
             {invoices.map((invoice, index) => (
-              <tr key={index}>
-                <td>{invoice.whereWasPurchased}</td>
-                <td>{invoice.totalItems}</td>
-                <td>{invoice.totalSpent}</td>
-                <td>{invoice.emissionDate}</td>
-              </tr>
+              <React.Fragment key={index}>
+                <tr
+                  onClick={() => toggleDetails(index)}
+                  className={invoice.showDetails ? "open" : ""}
+                  ref={(el) => (detailsRefs.current[index] = el)} // definindo referência
+                >
+                  <td>{invoice.whereWasPurchased}</td>
+                  <td>{invoice.totalItems}</td>
+                  <td>{invoice.totalSpent}</td>
+                  <td>{invoice.emissionDate}</td>
+                </tr>
+                {invoice.showDetails && (
+                  <tr style={{ backgroundColor: "white" }}>
+                    <td colSpan={"4"} style={{ cursor: "default" }}>
+                      <table className="details-table">
+                        <thead>
+                          <tr>
+                            <th>Produto</th>
+                            <th style={{ textAlign: "center" }}>Preço</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {invoice.productList.map((product, i) => (
+                            <tr key={i}>
+                              <td style={{ cursor: "text" }}>{product}</td>
+                              <td
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "text"
+                                }}
+                              >
+                                {invoice.prices[i]}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
