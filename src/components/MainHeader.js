@@ -7,6 +7,7 @@ const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
   const [invoices, setInvoices] = useState([]);
+  const [lastOpenedIndex, setLastOpenedIndex] = useState(null);
   const detailsRefs = useRef([]);
 
   const handleInputChange = (e) => {
@@ -41,7 +42,6 @@ const MainHeader = () => {
       });
 
       // dados retornados armazenados nos sets do useState
-      // não precisa mostrar quais os itens por enquanto, será mostrado na pag de info
       const newInvoice = {
         url,
         whereWasPurchased: response.data.data.local,
@@ -77,6 +77,8 @@ const MainHeader = () => {
     }
   };
 
+  // alterna entre abrir/fechar detalhes da nota
+
   const toggleDetails = (index) => {
     setInvoices((prevInvoices) =>
       prevInvoices.map((invoice, i) =>
@@ -85,19 +87,33 @@ const MainHeader = () => {
           : invoice
       )
     );
+
+    // armazena último index que foi pego, servindo pra fazer o smooth scroll depois
+    if (!invoices[index].showDetails) {
+      setLastOpenedIndex(index);
+    }
+  };
+
+
+  // deletar nota fiscal registrada
+  const deleteInvoice = (index, e) => {
+    e.stopPropagation(); // impede que afete child ou parent
+    setInvoices((prevInvoices) => prevInvoices.filter((_, i) => i !== index));
   };
 
   // smooth scrolling
   useEffect(() => {
-    const openedIndex = invoices.findIndex((invoice) => invoice.showDetails);
-    if (openedIndex !== -1 && detailsRefs.current[openedIndex]) {
-      detailsRefs.current[openedIndex].scrollIntoView({
+    if (
+      lastOpenedIndex !== null &&
+      invoices[lastOpenedIndex] &&
+      invoices[lastOpenedIndex].showDetails
+    ) {
+      detailsRefs.current[lastOpenedIndex].scrollIntoView({
         behavior: "smooth",
-        block: "start",
-        
+        block: "start"
       });
     }
-  }, [invoices]);
+  }, [invoices, lastOpenedIndex]);
 
   return (
     <>
@@ -152,7 +168,10 @@ const MainHeader = () => {
                 </tr>
                 {invoice.showDetails && (
                   <tr style={{ backgroundColor: "white" }}>
-                    <td colSpan={"4"} style={{ cursor: "default" }}>
+                    <td
+                      colSpan={"4"}
+                      style={{ cursor: "default", paddingBottom: 0 }}
+                    >
                       <table className="details-table">
                         <thead>
                           <tr>
@@ -176,6 +195,16 @@ const MainHeader = () => {
                           ))}
                         </tbody>
                       </table>
+                      <div className="delete-button-holder">
+                        <button
+                          className="delete-button"
+                          onClick={(e) => {
+                            deleteInvoice(index, e);
+                          }}
+                        >
+                          Excluir
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )}
