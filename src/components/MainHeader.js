@@ -46,7 +46,10 @@ const MainHeader = () => {
         whereWasPurchased: response.data.data.local,
         emissionDate: response.data.data.emissionDate,
         totalSpent: response.data.data.totalSpent,
-        totalItems: response.data.data.totalItems
+        totalItems: response.data.data.totalItems,
+        productList: response.data.data.items,
+        prices: response.data.data.prices,
+        showDetails: false
       };
 
       setInvoices((prevInvoices) => {
@@ -71,6 +74,16 @@ const MainHeader = () => {
         "Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte."
       );
     }
+  };
+
+  const toggleDetails = (index) => {
+    setInvoices((prevInvoices) =>
+      prevInvoices.map((invoice, i) =>
+        i === index
+          ? { ...invoice, showDetails: !invoice.showDetails }
+          : invoice
+      )
+    );
   };
 
   // aqui estava o código do useEffect
@@ -115,12 +128,46 @@ const MainHeader = () => {
           </thead>
           <tbody>
             {invoices.map((invoice, index) => (
-              <tr key={index}>
-                <td>{invoice.whereWasPurchased}</td>
-                <td>{invoice.totalItems}</td>
-                <td>{invoice.totalSpent}</td>
-                <td>{invoice.emissionDate}</td>
-              </tr>
+              <React.Fragment key={index}>
+                <tr
+                  onClick={() => toggleDetails(index)}
+                  className={invoice.showDetails ? "open" : ""}
+                >
+                  <td>{invoice.whereWasPurchased}</td>
+                  <td>{invoice.totalItems}</td>
+                  <td>{invoice.totalSpent}</td>
+                  <td>{invoice.emissionDate}</td>
+                </tr>
+                {invoice.showDetails && (
+                  <tr style={{ backgroundColor: "white" }}>
+                    <td colSpan={"4"} style={{ cursor: "default" }}>
+                      <table className="details-table">
+                        <thead>
+                          <tr>
+                            <th>Produto</th>
+                            <th style={{ textAlign: "center" }}>Preço</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {invoice.productList.map((product, i) => (
+                            <tr key={i}>
+                              <td style={{ cursor: "text" }}>{product}</td>
+                              <td
+                                style={{
+                                  textAlign: "center",
+                                  cursor: "text"
+                                }}
+                              >
+                                {invoice.prices[i]}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

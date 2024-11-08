@@ -86,9 +86,12 @@ th {
 
 td {
   font-size: 26px;
-  cursor: pointer
+  cursor: pointer;
 }
 
+.alignTextCenter {
+  text-align: center;
+}
 
 .table-style th {
   background-color: #66d985; /* Cor de fundo para o cabeçalho */
@@ -96,5 +99,24 @@ td {
 }
 
 .table-style tr:hover {
-  background-color: #eeeeee91; /* Efeito de hover para as linhas */
+  background-color: #f1f1f191; /* Efeito de hover para as linhas */
 }
+
+.details-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+.details-table td,
+.details-table th {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.open {
+  background-color: #f0f0f0;
+}
+
+
