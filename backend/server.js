@@ -39,9 +39,11 @@ app.post("/scrape", async (req, res) => {
     );
 
     // Coleta o gasto total da compra
+    // vai mudar de string pra float e fazer a troca de , para .
     const totalSpent = await page.$$eval(".txtMax", (el) =>
-      el.map((spent) => spent.textContent)
+      el.map((spent) => parseFloat(spent.textContent.replace(",", ".")))     
     );
+
 
     const totalItems = await page.$eval(".totalNumb", (el) => el.textContent);
 

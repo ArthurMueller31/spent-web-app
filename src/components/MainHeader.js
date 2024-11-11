@@ -8,11 +8,16 @@ const MainHeader = () => {
   const [isError, setIsError] = useState(false);
   const [invoices, setInvoices] = useState([]);
   const [lastOpenedIndex, setLastOpenedIndex] = useState(null);
+  const [totalSpentSum, setTotalSpentSum] = useState(0);
   const detailsRefs = useRef([]);
 
   const handleInputChange = (e) => {
     setUrl(e.target.value);
     setIsError(false);
+  };
+
+  const clearInput = () => {
+    setUrl("");
   };
 
   // previne que o form seja enviado e carregue nova pag, e vê se o link está certo (validando no front pra nem chegar a usar o scraping se estiver errado)
@@ -46,7 +51,7 @@ const MainHeader = () => {
         url,
         whereWasPurchased: response.data.data.local,
         emissionDate: response.data.data.emissionDate,
-        totalSpent: response.data.data.totalSpent,
+        totalSpent: response.data.data.totalSpent, // agora deve receber valor em float
         totalItems: response.data.data.totalItems,
         productList: response.data.data.items,
         prices: response.data.data.prices,
@@ -64,6 +69,10 @@ const MainHeader = () => {
               new Date(formatDateForSorting(a.emissionDate))
           );
 
+          console.log(newInvoice.totalSpent);
+
+          calculateTotalSpent([...prevInvoices, newInvoice]); // atualizar total acumulado
+
           return sortedInvoices;
         } else {
           alert("Você já inseriu esse link anteriormente.");
@@ -77,8 +86,29 @@ const MainHeader = () => {
     }
   };
 
-  // alterna entre abrir/fechar detalhes da nota
+  const calculateTotalSpent = (invoicesList) => {
+    // calcular o total baseado nas notas anteriores e atual
+    const total = invoicesList.reduce(
+      (acc, invoice) => acc + parseFloat(invoice.totalSpent),
+      0
+    );
+    setTotalSpentSum(total);
+  };
 
+  // useEffect(() => {
+  //   // salvar notas no localStorage quando o estado mudar
+  //   localStorage.setItem("invoices", JSON.stringify(invoices));
+  // }, [invoices]);
+
+  // useEffect(() => {
+  //   // carregar notas do localStorage quando iniciar
+  //   const savedInvoices = localStorage.getItem("invoices");
+  //   if (savedInvoices) {
+  //     setInvoices(JSON.parse(savedInvoices));
+  //   }
+  // }, []);
+
+  // alterna entre abrir/fechar detalhes da nota
   const toggleDetails = (index) => {
     setInvoices((prevInvoices) =>
       prevInvoices.map((invoice, i) =>
@@ -94,11 +124,14 @@ const MainHeader = () => {
     }
   };
 
-
   // deletar nota fiscal registrada
   const deleteInvoice = (index, e) => {
     e.stopPropagation(); // impede que afete child ou parent
-    setInvoices((prevInvoices) => prevInvoices.filter((_, i) => i !== index));
+    setInvoices((prevInvoices) => {
+      const updatedInvoices = prevInvoices.filter((_, i) => i !== index);
+      calculateTotalSpent(updatedInvoices);
+      return updatedInvoices;
+    });
   };
 
   // smooth scrolling
@@ -136,11 +169,24 @@ const MainHeader = () => {
             value={url}
             onChange={handleInputChange}
           />
+
           <button type="submit" className="button-style" onClick={handleSubmit}>
             Salvar gastos
           </button>
+
+          <button type="button" onClick={clearInput} className="clear-button">
+            Limpar entrada
+          </button>
         </form>
         <div>{isError && <ErrorMessage />}</div>
+      </div>
+
+      <div className="total-spent-div">
+        Gastos totais: R$
+        {totalSpentSum.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}
       </div>
 
       <div className="table-holder">
@@ -163,7 +209,14 @@ const MainHeader = () => {
                 >
                   <td>{invoice.whereWasPurchased}</td>
                   <td>{invoice.totalItems}</td>
-                  <td>{invoice.totalSpent}</td>
+                  <td>
+                    {invoice.totalSpent.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
+                    {/* aplica a mesma lógica para deixar os números formatados conforme o padrão brasileiro de escrita de R$  */}
+                  </td>
+
                   <td>{invoice.emissionDate}</td>
                 </tr>
                 {invoice.showDetails && (
