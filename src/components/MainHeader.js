@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import "./MainHeader.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
+import LoadingMessage from "./LoadingMessage";
 
 const MainHeader = () => {
   const [url, setUrl] = useState("");
   const [isError, setIsError] = useState(false);
   const [invoices, setInvoices] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [lastOpenedIndex, setLastOpenedIndex] = useState(null);
   const [totalSpentSum, setTotalSpentSum] = useState(0);
   const detailsRefs = useRef([]);
@@ -41,6 +43,7 @@ const MainHeader = () => {
 
   // pega a resposta do scraping com a url dada pelo user
   const returnData = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post("http://192.168.2.9:3000/scrape", {
         url: url
@@ -69,8 +72,6 @@ const MainHeader = () => {
               new Date(formatDateForSorting(a.emissionDate))
           );
 
-          console.log(newInvoice.totalSpent);
-
           calculateTotalSpent([...prevInvoices, newInvoice]); // atualizar total acumulado
 
           return sortedInvoices;
@@ -83,6 +84,8 @@ const MainHeader = () => {
       alert(
         "Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte."
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -95,18 +98,22 @@ const MainHeader = () => {
     setTotalSpentSum(total);
   };
 
-  // useEffect(() => {
-  //   // salvar notas no localStorage quando o estado mudar
-  //   localStorage.setItem("invoices", JSON.stringify(invoices));
-  // }, [invoices]);
+  // setar os itens que vão ser salvos no localStorage
+  useEffect(() => {
+    if (invoices.length > 0) {
+      localStorage.setItem("invoices", JSON.stringify(invoices));
+    }
+  }, [invoices]);
 
-  // useEffect(() => {
-  //   // carregar notas do localStorage quando iniciar
-  //   const savedInvoices = localStorage.getItem("invoices");
-  //   if (savedInvoices) {
-  //     setInvoices(JSON.parse(savedInvoices));
-  //   }
-  // }, []);
+  // pega os dados salvos no navegador e retorna, calculando também os gastos totais
+  useEffect(() => {
+    const savedInvoices = localStorage.getItem("invoices");
+    if (savedInvoices) {
+      const parsedInvoices = JSON.parse(savedInvoices);
+      setInvoices(parsedInvoices);
+      calculateTotalSpent(parsedInvoices);
+    }
+  }, []);
 
   // alterna entre abrir/fechar detalhes da nota
   const toggleDetails = (index) => {
@@ -156,6 +163,17 @@ const MainHeader = () => {
           Você pode começar a adicionar seus gastos inserindo o link da nota
           fiscal no campo abaixo.
         </p>
+
+        <p className="paragraphs">
+          No momento apenas notas fiscais do estado de SC são aceitas, devido
+          diferenças aos outros estados.
+        </p>
+
+        <p className="paragraphs">
+          Para ver mais detalhes após inserir uma nota, clique no item que
+          deseja expandir.
+        </p>
+
         <p className="paragraphs">
           Em caso de dúvidas, dê uma olhada na página Sobre.
         </p>
@@ -178,94 +196,107 @@ const MainHeader = () => {
             Limpar entrada
           </button>
         </form>
-        <div>{isError && <ErrorMessage />}</div>
+        <div>
+          {isLoading && <LoadingMessage />}
+          {isError && <ErrorMessage />}
+        </div>
       </div>
 
-      <div className="total-spent-div">
-        Gastos totais: R$
-        {totalSpentSum.toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        })}
-      </div>
+      {invoices.length > 0 ? (
+        <>
+          <div className="total-spent-div">
+            Gastos totais: R$
+            {totalSpentSum.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </div>
 
-      <div className="table-holder">
-        <table className="table-style">
-          <thead>
-            <tr>
-              <th>Local da Compra</th>
-              <th>Qtd. de Produtos</th>
-              <th>Gasto Total</th>
-              <th>Data da Compra</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.map((invoice, index) => (
-              <React.Fragment key={index}>
-                <tr
-                  onClick={() => toggleDetails(index)}
-                  className={invoice.showDetails ? "open" : ""}
-                  ref={(el) => (detailsRefs.current[index] = el)} // definindo referência
-                >
-                  <td>{invoice.whereWasPurchased}</td>
-                  <td>{invoice.totalItems}</td>
-                  <td>
-                    {invoice.totalSpent.toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                    })}
-                    {/* aplica a mesma lógica para deixar os números formatados conforme o padrão brasileiro de escrita de R$  */}
-                  </td>
-
-                  <td>{invoice.emissionDate}</td>
+          <div className="table-holder">
+            <table className="table-style">
+              <thead>
+                <tr>
+                  <th>Local da Compra</th>
+                  <th>Qtd. de Produtos</th>
+                  <th>Gasto Total</th>
+                  <th>Data da Compra</th>
                 </tr>
-                {invoice.showDetails && (
-                  <tr style={{ backgroundColor: "white" }}>
-                    <td
-                      colSpan={"4"}
-                      style={{ cursor: "default", paddingBottom: 0 }}
+              </thead>
+              <tbody>
+                {invoices.map((invoice, index) => (
+                  <React.Fragment key={index}>
+                    <tr
+                      onClick={() => toggleDetails(index)}
+                      className={invoice.showDetails ? "open" : ""}
+                      ref={(el) => (detailsRefs.current[index] = el)} // definindo referência
                     >
-                      <table className="details-table">
-                        <thead>
-                          <tr>
-                            <th>Produto</th>
-                            <th style={{ textAlign: "center" }}>Preço</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {invoice.productList.map((product, i) => (
-                            <tr key={i}>
-                              <td style={{ cursor: "text" }}>{product}</td>
-                              <td
-                                style={{
-                                  textAlign: "center",
-                                  cursor: "text"
-                                }}
-                              >
-                                {invoice.prices[i]}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      <div className="delete-button-holder">
-                        <button
-                          className="delete-button"
-                          onClick={(e) => {
-                            deleteInvoice(index, e);
-                          }}
+                      <td>{invoice.whereWasPurchased}</td>
+                      <td>{invoice.totalItems}</td>
+                      <td>
+                        {invoice.totalSpent.toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                        {/* aplica a mesma lógica para deixar os números formatados conforme o padrão brasileiro de escrita de R$  */}
+                      </td>
+
+                      <td>{invoice.emissionDate}</td>
+                    </tr>
+                    {invoice.showDetails && (
+                      <tr style={{ backgroundColor: "white" }}>
+                        <td
+                          colSpan={"4"}
+                          style={{ cursor: "default", paddingBottom: 0 }}
                         >
-                          Excluir
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                          <table className="details-table">
+                            <thead>
+                              <tr>
+                                <th>Produto</th>
+                                <th style={{ textAlign: "center" }}>Preço</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {invoice.productList.map((product, i) => (
+                                <tr key={i}>
+                                  <td style={{ cursor: "text" }}>{product}</td>
+                                  <td
+                                    style={{
+                                      textAlign: "center",
+                                      cursor: "text"
+                                    }}
+                                  >
+                                    {invoice.prices[i]}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          <div className="delete-button-holder">
+                            <button
+                              className="delete-button"
+                              onClick={(e) => {
+                                deleteInvoice(index, e);
+                              }}
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <div className="empty-table-message">
+          <p className="add-invoice-p">
+            <strong>Adicione uma nota fiscal para começar.</strong>
+          </p>
+        </div>
+      )}
     </>
   );
 };

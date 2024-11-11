@@ -1,10 +1,10 @@
-.error-text {
+.loading-text {
   font-size: 20px;
-  color: red;
+  color: gray;
   position: absolute;
 }
 
-.error-div {
+.loading-div {
   margin-top: -5px;
   display: flex;
   justify-content: center;
