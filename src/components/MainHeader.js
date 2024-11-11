@@ -181,7 +181,13 @@ const MainHeader = () => {
         <div>{isError && <ErrorMessage />}</div>
       </div>
 
-      <div className="total-spent-div">Gastos totais: R${totalSpentSum !== 0 ? totalSpentSum : "0.00"}</div>
+      <div className="total-spent-div">
+        Gastos totais: R$
+        {totalSpentSum.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })}
+      </div>
 
       <div className="table-holder">
         <table className="table-style">
@@ -203,7 +209,14 @@ const MainHeader = () => {
                 >
                   <td>{invoice.whereWasPurchased}</td>
                   <td>{invoice.totalItems}</td>
-                  <td>{invoice.totalSpent}</td>
+                  <td>
+                    {invoice.totalSpent.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
+                    {/* aplica a mesma lógica para deixar os números formatados conforme o padrão brasileiro de escrita de R$  */}
+                  </td>
+
                   <td>{invoice.emissionDate}</td>
                 </tr>
                 {invoice.showDetails && (
