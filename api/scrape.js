@@ -1,24 +1,14 @@
-const express = require("express");
 const puppeteer = require("puppeteer");
 
-const app = express();
-app.use(express.json()); // Para processar JSON nas requisições
-const cors = require("cors");
-app.use(cors());
-
-// Rota para realizar scraping de uma nota fiscal com base no QR code
-app.post("/scrape", async (req, res) => {
+module.exports = async (req,res) => {
   const { url } = req.body;
 
   try {
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    console.log("Iniciando scraping...");
+    const page = await browser.newPage(); // inicia scraping
 
-    await page.goto(url);
-    console.log("Navegando para a URL...");
-    console.log("Olhe o console do navegador");
-
+    await page.goto(url); // vai pra url
+   
     const whereWasBought = await page.$$eval(".txtTopo", (el) =>
       el.map((text) => text.textContent)
     );
@@ -85,10 +75,4 @@ app.post("/scrape", async (req, res) => {
     console.error("Erro ao fazer scraping:", error);
     res.status(500).json({ success: false, message: "Erro ao fazer scraping" });
   }
-});
-
-// Inicializa o servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+};
