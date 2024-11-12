@@ -1,12 +1,12 @@
 import React from "react";
 import Navbar from "./Navbar";
-import MainHeader from "./MainHeader";
+import MainPage from "./MainPage";
 
 const MainScreen = () => {
   return (
     <>
       <Navbar />
-      <MainHeader />
+      <MainPage />
     </>
   );
 };
