@@ -54,7 +54,7 @@ const MainHeader = () => {
   const returnData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post("https://spent-app.vercel.app/scrape", {
+      const response = await axios.post("https://spent-app.vercel.app/api/scrape", {
         url: url
       });
 

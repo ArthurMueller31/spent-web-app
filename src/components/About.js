@@ -82,7 +82,7 @@ const About = () => {
             vê a nota fiscal, nosso site deve reconhecer.
           </p>
           <p>Abaixo você pode ver um exemplo:</p>
-          <img src="../exemplo-nota-fiscal.png" alt="exemplo de nota fiscal" />
+          <img src="/exemplo-nota-fiscal.png" alt="exemplo de nota fiscal" />
 
           <p>
             Até o momento, serão guardadas as informações localmente, ou seja,
