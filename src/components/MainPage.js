@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./MainHeader.css";
+import "./MainPage.css";
 import axios from "axios";
 import ErrorMessage from "./ErrorMessage";
 import LoadingMessage from "./LoadingMessage";
