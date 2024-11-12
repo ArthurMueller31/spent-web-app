@@ -15,7 +15,8 @@
 .paragraphs {
   font-size: 32px;
   font-weight: 500;
-  max-width: 800px;
+  width: 800px;
+  max-width: fit-content;
   text-align: center;
 }
 
@@ -164,4 +165,87 @@ td {
 
 .delete-button:hover {
   color: rgba(255, 0, 0, 0.712);
+}
+
+@media (max-width: 768px) {
+  .welcome-text {
+    padding: 0 30px;
+  }
+
+  .paragraphs {
+    padding: 0 40px;
+  }
+}
+
+
+@media (max-width: 650px) {
+  .welcome-text {
+    padding: 0 30px
+  }
+
+  .paragraphs {
+    padding: 0 40px
+  }
+  .table-holder {
+    overflow-x: auto; /* Para permitir scroll horizontal, se necessário */
+  }
+
+  .table-style {
+    width: 80%; /* Reduzindo a largura da tabela para caber melhor na tela */
+    font-size: 0.8em; /* Reduz o tamanho do texto */
+  }
+
+  .table-style th,
+  .table-style td {
+    padding: 6px 8px; /* Reduz o padding das células */
+  }
+}
+
+@media (max-width: 560px) {
+  .welcome-text {
+    font-size: 40px;
+  }
+
+  .paragraphs {
+    font-size: 26px;
+  }
+
+  .total-spent-div {
+    font-size: 28px;
+  }
+
+  .button-style, .clear-button {
+    font-size: 26px;
+  }
+
+  .table-holder {
+    zoom: 80%;
+  }
+}
+
+@media (max-width: 470px) {
+  .table-holder {
+    zoom: 70%;
+  }
+}
+
+@media (max-width: 410px) {
+
+  .input-style {
+    width: 90%;
+  }
+
+  .table-holder {
+    zoom: 60%;
+  }
+}
+
+@media (max-width: 350px) {
+  .total-spent-div {
+    font-size: 24px;
+  }
+
+  .table-holder {
+    zoom: 55%;
+  }
 }

@@ -234,9 +234,9 @@ const MainHeader = () => {
                       className={invoice.showDetails ? "open" : ""}
                       ref={(el) => (detailsRefs.current[index] = el)} // definindo referência
                     >
-                      <td>{invoice.whereWasPurchased}</td>
-                      <td>{invoice.totalItems}</td>
-                      <td>
+                      <td data-label="Local da Compra">{invoice.whereWasPurchased}</td>
+                      <td data-label="Qtd. de Produtos">{invoice.totalItems}</td>
+                      <td data-label="Gasto Total">
                         {invoice.totalSpent.toLocaleString("pt-BR", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2
@@ -244,7 +244,7 @@ const MainHeader = () => {
                         {/* aplica a mesma lógica para deixar os números formatados conforme o padrão brasileiro de escrita de R$  */}
                       </td>
 
-                      <td>{invoice.emissionDate}</td>
+                      <td data-label="Data da Compra">{invoice.emissionDate}</td>
                     </tr>
                     {invoice.showDetails && (
                       <tr style={{ backgroundColor: "white" }}>
