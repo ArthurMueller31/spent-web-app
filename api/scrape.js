@@ -13,7 +13,7 @@ app.get('*', (req,res) => {
 })
 
 // Rota para realizar scraping de uma nota fiscal com base no QR code
-app.post("api/scrape", async (req, res) => {
+app.post("/api/scrape", async (req, res) => {
   const { url } = req.body;
 
   try {
