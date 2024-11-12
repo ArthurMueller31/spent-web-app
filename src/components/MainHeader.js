@@ -28,8 +28,17 @@ const MainHeader = () => {
 
     const inputIncludesRightLink = url.includes("https://sat.sef.sc.gov.br/");
     if (inputIncludesRightLink) {
+      const savedInvoices = JSON.parse(localStorage.getItem("invoices")) || [];
+      const isDuplicate = savedInvoices.some((invoice) => invoice.url === url);
+
+      if (isDuplicate) {
+        alert("Esse link já foi inserido anteriormente");
+        return;
+      }
+
       setIsError(false);
       returnData(); // chama a func que faz o scraping
+      
     } else {
       setIsError(true);
     }
@@ -65,6 +74,7 @@ const MainHeader = () => {
         const isDuplicate = prevInvoices.some(
           (invoice) => invoice.url === newInvoice.url
         );
+
         if (!isDuplicate) {
           const sortedInvoices = [...prevInvoices, newInvoice].sort(
             (a, b) =>
@@ -137,6 +147,9 @@ const MainHeader = () => {
     setInvoices((prevInvoices) => {
       const updatedInvoices = prevInvoices.filter((_, i) => i !== index);
       calculateTotalSpent(updatedInvoices);
+
+      // quando deletado modifica o localStorage
+      localStorage.setItem("invoices", JSON.stringify(updatedInvoices));
       return updatedInvoices;
     });
   };
