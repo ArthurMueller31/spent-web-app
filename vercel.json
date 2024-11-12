@@ -6,6 +6,7 @@
   ],
   "routes": [
      { "src": "/api/scrape", "dest": "/api/scrape.js" },
+     { "src": "/static/(.*)", "dest": "/static/$1" },
      { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
