@@ -53,7 +53,7 @@ button {
 .button-style:hover {
   transition: ease-in-out;
   transition-duration: 200ms;
-  color: #21ef83;
+  color: #00b658;
 }
 
 .clear-button:hover {
@@ -83,7 +83,7 @@ button {
 
 td {
   padding: 10px;
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid red;
   font-size: 20px;
 }
 
@@ -104,7 +104,7 @@ td {
 .table-style td {
   padding: 15px 20px; /* Espaçamento interno nas tds */
   text-align: center;
-  border: 1px solid #898989; /* Borda fina entre as tds */
+  border: 1px solid #898989; /* Borda fina entre as tds  antes era 898989*/
 }
 
 th {
@@ -139,7 +139,7 @@ td {
 .details-table th {
   padding: 8px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #898989;
 }
 
 .open {
@@ -160,7 +160,7 @@ td {
   cursor: pointer; /* Mostra o cursor de clique ao passar sobre o botão */
   border: 1px solid red;
   padding: 5px;
-  border-radius: 5%;
+  border-radius: 10px;
 }
 
 .delete-button:hover {
@@ -179,6 +179,17 @@ td {
 
 
 @media (max-width: 650px) {
+
+  .button-style:active {
+    background-color: #21ef853c;
+    border-radius: 10px;
+  }
+
+  .clear-button:active {
+    background-color: rgba(255, 0, 0, 0.114);
+    border-radius: 10px;
+  }
+
   .welcome-text {
     padding: 0 30px
   }

@@ -3,6 +3,7 @@
   color: red;
   position: absolute;
   text-align: center;
+  width: 100%;
 }
 
 .error-div {

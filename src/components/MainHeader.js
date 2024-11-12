@@ -170,7 +170,7 @@ const MainHeader = () => {
 
         <p className="paragraphs">
           No momento apenas notas fiscais do estado de SC são aceitas, devido
-          diferenças aos outros estados.
+          diferenças para outros estados.
         </p>
 
         <p className="paragraphs">
@@ -179,7 +179,7 @@ const MainHeader = () => {
         </p>
 
         <p className="paragraphs">
-          Em caso de dúvidas, dê uma olhada na página Sobre.
+          Em caso de dúvidas, qual tipo de nota fiscal é aceita, entre outros, dê uma olhada na página Sobre.
         </p>
 
         <p className="paragraphs">Insira o link aqui</p>
