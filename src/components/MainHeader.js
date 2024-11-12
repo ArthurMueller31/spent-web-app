@@ -28,7 +28,8 @@ const MainHeader = () => {
 
     const inputIncludesRightLink = url.includes("https://sat.sef.sc.gov.br/");
     if (inputIncludesRightLink) {
-      const savedInvoices = JSON.parse(localStorage.getItem("invoices")) || [];
+      // checar duplicidade no link antes de mandar pro backend
+      const savedInvoices = JSON.parse(localStorage.getItem("invoices")) || []; 
       const isDuplicate = savedInvoices.some((invoice) => invoice.url === url);
 
       if (isDuplicate) {
@@ -38,7 +39,6 @@ const MainHeader = () => {
 
       setIsError(false);
       returnData(); // chama a func que faz o scraping
-      
     } else {
       setIsError(true);
     }
@@ -71,24 +71,15 @@ const MainHeader = () => {
       };
 
       setInvoices((prevInvoices) => {
-        const isDuplicate = prevInvoices.some(
-          (invoice) => invoice.url === newInvoice.url
+        const sortedInvoices = [...prevInvoices, newInvoice].sort(
+          (a, b) =>
+            new Date(formatDateForSorting(b.emissionDate)) -
+            new Date(formatDateForSorting(a.emissionDate))
         );
 
-        if (!isDuplicate) {
-          const sortedInvoices = [...prevInvoices, newInvoice].sort(
-            (a, b) =>
-              new Date(formatDateForSorting(b.emissionDate)) -
-              new Date(formatDateForSorting(a.emissionDate))
-          );
+        calculateTotalSpent([...prevInvoices, newInvoice]); // atualizar total acumulado
 
-          calculateTotalSpent([...prevInvoices, newInvoice]); // atualizar total acumulado
-
-          return sortedInvoices;
-        } else {
-          alert("Você já inseriu esse link anteriormente.");
-          return prevInvoices; // Retorna o array sem mudanças se for duplicada
-        }
+        return sortedInvoices;
       });
     } catch (error) {
       alert(
