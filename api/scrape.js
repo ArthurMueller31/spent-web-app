@@ -1,25 +1,24 @@
 const express = require("express");
 const puppeteer = require("puppeteer-core");
-// const path = require("path");
+const path = require("path");
 
 const app = express();
 app.use(express.json()); // Para processar JSON nas requisições
 const cors = require("cors");
 app.use(cors());
 
-// app.use(express.static(path.join(__dirname, "../build")));
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../build"));
-// });
+app.use(express.static(path.join(__dirname, "../build")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build"));
+});
 
 // Rota para realizar scraping de uma nota fiscal com base no QR code
 app.post("/api/scrape", async (req, res) => {
   const { url } = req.body;
 
   try {
-    const browser = await puppeteer.connect({
-      browserWSEndpoint: process.env.BROWSER_WS_ENDPOINT 
-      // changed in order to work with railway
+    const browser = await puppeteer.launch({
+      headless: false,
     });
     const page = await browser.newPage();
     console.log("Iniciando scraping...");
