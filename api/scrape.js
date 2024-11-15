@@ -1,16 +1,16 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
-// const path = require("path")
+const path = require("path")
 
 const app = express();
 app.use(express.json()); // Para processar JSON nas requisições
 const cors = require("cors");
 app.use(cors());
 
-// app.use(express.static(path.join(__dirname, "../build")))
-// app.get('*', (req,res) => {
-//   res.sendFile(path.join(__dirname, "../build"))
-// })
+app.use(express.static(path.join(__dirname, "../build")))
+app.get('*', (req,res) => {
+  res.sendFile(path.join(__dirname, "../build"))
+})
 
 // Rota para realizar scraping de uma nota fiscal com base no QR code
 app.post("/api/scrape", async (req, res) => {
