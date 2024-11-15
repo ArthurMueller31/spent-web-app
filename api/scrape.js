@@ -1,23 +1,35 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
-const path = require("path")
+const path = require("path");
 
 const app = express();
 app.use(express.json()); // Para processar JSON nas requisições
 const cors = require("cors");
 app.use(cors());
 
-app.use(express.static(path.join(__dirname, "../build")))
-app.get('*', (req,res) => {
-  res.sendFile(path.join(__dirname, "../build"))
-})
+app.use(express.static(path.join(__dirname, "../build")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build"));
+});
 
 // Rota para realizar scraping de uma nota fiscal com base no QR code
 app.post("/api/scrape", async (req, res) => {
   const { url } = req.body;
 
   try {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process",
+        "--disable-gpu"
+      ]
+    });
     const page = await browser.newPage();
     console.log("Iniciando scraping...");
 
@@ -47,9 +59,8 @@ app.post("/api/scrape", async (req, res) => {
     // Coleta o gasto total da compra
     // vai mudar de string pra float e fazer a troca de , para .
     const totalSpent = await page.$$eval(".txtMax", (el) =>
-      el.map((spent) => parseFloat(spent.textContent.replace(",", ".")))     
+      el.map((spent) => parseFloat(spent.textContent.replace(",", ".")))
     );
-
 
     const totalItems = await page.$eval(".totalNumb", (el) => el.textContent);
 
