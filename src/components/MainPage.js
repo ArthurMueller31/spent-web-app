@@ -54,7 +54,7 @@ const MainHeader = () => {
   const returnData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post("https://spent-webapp.up.railway.app/api/scrape", {
+      const response = await axios.post("https://spent-web-app.onrender.com/api/scrape", {
         url: url
       });
 
