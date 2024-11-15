@@ -82,6 +82,7 @@ const MainHeader = () => {
         return sortedInvoices;
       });
     } catch (error) {
+      console.log(error);
       alert(
         "Algo deu errado. Confira se o link inserido está correto.\nCaso você tenha certeza que está correto, contate-nos para suporte."
       );
