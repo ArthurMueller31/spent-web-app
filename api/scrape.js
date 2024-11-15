@@ -1,5 +1,5 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 // const path = require("path");
 
 const app = express();
@@ -17,18 +17,9 @@ app.post("/api/scrape", async (req, res) => {
   const { url } = req.body;
 
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--no-first-run",
-        "--no-zygote",
-        "--single-process",
-        "--disable-gpu"
-      ]
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: process.env.BROWSER_WS_ENDPOINT 
+      // changed in order to work with railway
     });
     const page = await browser.newPage();
     console.log("Iniciando scraping...");
